@@ -1,0 +1,63 @@
+body {
+    background-color: #AAAAAA;
+}
+
+#wrapper {
+    text-align: center;
+    width: 500px;
+    padding: 30px;
+    background-color: #555555;
+    margin: 0px auto;
+    border: 1px solid #bbbbbb;
+}
+
+#main-header {
+    font-family: 'Courier New', Courier, monospace;
+    color: #dddddd;
+}
+
+#responses {
+    width: 500px;
+    padding: 0px 30px;
+    text-align: left;
+    background-color: #ffffff;
+    margin: 0px auto;
+    border: 1px solid #bbbbbb;
+}
+
+#main-label {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+#url {
+    padding: 5px;
+}
+
+#submitButton {
+    background-color: yellow;
+    color: red;
+    padding: 8px;
+    border-color: blue;
+    border-width: 1px;
+    font-weight: bold;
+}
+
+#clearButton {
+    background-color: blue;
+    color: yellow;
+    font-weight: bold;
+    border-color: purple;
+    border-width: 1px;
+    padding: 8px;
+    margin-left: 2px;    
+}
+
+.responseItem {
+    padding: 2px 2px;
+}
+
+#awesomeimageforthewebsite { 
+    width: 150px;
+    margin: 0px auto;
+}

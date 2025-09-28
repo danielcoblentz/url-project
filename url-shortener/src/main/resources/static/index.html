@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>url shortener</title>
+        <link rel="stylesheet" href="global.css" type="text/css">
+
+        <script>
+            /**
+             * Handles submitting our parameter and displaying the values
+             */
+            async function submitQuery() {
+                const urlInput = document.getElementById('url');
+                const responseContainer = document.getElementById('responses');
+                
+                let urlValue = urlInput.value ?? '';
+                urlValue = urlValue.trim();
+                // Do not allow empty values
+                if (!urlValue) {
+                    console.error("Invalid url!");
+                    urlInput.value = '';
+                    urlInput.focus();
+                    alert("Enter a url to shorten!")
+                    return;
+                }
+
+                try {
+                    // console.log("Attempting to shorten: ", urlValue);
+
+                    const response = await fetch("http://localhost:8080/shorten", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ url: urlValue })
+                    }); 
+
+                    if (!response.ok) {
+                        console.error("Failed - error: " . response.status);
+                        throw new Error(`Response status: ${response.status}`);
+                    }
+                    
+                    const result = await response.text(); 
+                    const shortUrl = result.replace(/^Short URL:\s*/, '').trim();
+
+                    // Create the link for the shortened url.
+                    const shortUrlLink = document.createElement('a');
+                    shortUrlLink.href = shortUrl;
+                    shortUrlLink.textContent = shortUrl;
+                    shortUrlLink.target = "new";
+
+                    // Create the link for the original url.
+                    const originalUrlLink = document.createElement('a');
+                    originalUrlLink.href = urlValue;
+                    originalUrlLink.textContent = urlValue;
+                    originalUrlLink.target = "new";
+
+                    // Create an arrow or something to show we're going from A -> B.
+                    const arrowText = document.createElement('span');
+                    arrowText.textContent = " -> ";
+
+                    // Create a new container to put everything together within
+                    const newDiv = document.createElement('div');
+                    newDiv.classList.add('responseItem');
+
+                    // Append items into container
+                    newDiv.appendChild(originalUrlLink);
+                    newDiv.appendChild(arrowText);
+                    newDiv.appendChild(shortUrlLink);
+                    
+                    // Append the end result in the response container.
+                    // to reset every time rather than keeping list, uncomment the following
+                    // responseContainer.textContent = '';
+                    responseContainer.appendChild(newDiv);
+                }
+                catch (error) {
+                    console.error(error.message);
+                }
+            }
+
+            /**
+             * Clears the response window and resets the url parameter.
+             */
+            function clearResponses() {
+                const urlInput = document.getElementById('url');
+                const responseContainer = document.getElementById('responses');
+                urlInput.value = '';
+                urlInput.focus();
+                responseContainer.textContent = '';
+            }
+        </script>
+    </head>
+    <body>
+        <div id="wrapper">
+            <img src="./happyface.png" id="awesomeimageforthewebsite" />
+            <h1 id="main-header">oh my hod bruh</h1>
+            <label id="main-label" for="url">Enter Url: </label>
+            <input type="text" id="url" required>
+            <button id="submitButton" onClick="submitQuery()" type="submit">shorten th url bro</button>
+            <button id="clearButton" onClick="clearResponses()">RESET BUTTON</button>
+            <p id="link"></p>
+        </div>        
+
+        <div id="responses"></div>
+    </body>
+</html>
