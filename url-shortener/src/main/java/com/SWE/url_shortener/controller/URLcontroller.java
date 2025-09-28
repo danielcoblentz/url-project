@@ -12,30 +12,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 //DTO for accepting input from user
-record urlrecord(String url) {}
+record urlrecord(String url) {
+}
 
 @RestController
 public class URLcontroller {
-@PostMapping("/shorten")
-public String shortenString(@RequestBody urlrecord req) {
-    // Very simple "shortener" for MVP
-    String code = Integer.toHexString(req.url().hashCode());
-    return "Short URL: http://localhost:8080/" + code;
-}
+    @PostMapping("/shorten")
+    public String shortenString(@RequestBody urlrecord req) {
+        // Very simple "shortener" for MVP
+        String code = Integer.toHexString(req.url().hashCode());
+        return "Short URL: http://localhost:8080/" + code;
+    }
 
-@GetMapping("/{code}")
-public ResponseEntity<Void> redirect(@PathVariable String code) {
-    // just a sample url (we dont have any loaded into database yet)
-    String originalUrl = "https://example.com"; 
-    // after we have data look it up in DB with UrlRepository
-    return ResponseEntity.status(HttpStatus.FOUND)  // 302 redirect
-            .location(URI.create(originalUrl))
-            .build();
-}
+    @GetMapping("/{code:[a-zA-Z0-9]+}")
+    public ResponseEntity<Void> redirect(@PathVariable String code) {
+        // just a sample url (we dont have any loaded into database yet)
+        String originalUrl = "https://example.com";
+        // after we have data look it up in DB with UrlRepository
+        return ResponseEntity.status(HttpStatus.FOUND) // 302 redirect
+                .location(URI.create(originalUrl))
+                .build();
+    }
 
-//delete this later its just for testing
-@GetMapping("/testing")
-public String testMethod() {
-    return "its working!";
-}
+    // delete this later its just for testing
+    @GetMapping("/testing")
+    public String testMethod() {
+        return "its working!";
+    }
 }
