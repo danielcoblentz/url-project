@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
     <head>
-        <title>url shortener</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>URL Shortener</title>
         <link rel="stylesheet" href="global.css" type="text/css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
         <script>
             /**
@@ -25,7 +27,7 @@
                 }
 
                 try {
-                    // console.log("Attempting to shorten: ", urlValue);
+                
 
                     const response = await fetch("http://localhost:8080/shorten", {
                         method: 'POST',
@@ -43,42 +45,74 @@
                     const result = await response.text(); 
                     const shortUrl = result.replace(/^Short URL:\s*/, '').trim();
 
-                    // Create the link for the shortened url.
-                    const shortUrlLink = document.createElement('a');
-                    shortUrlLink.href = shortUrl;
-                    shortUrlLink.textContent = shortUrl;
-                    shortUrlLink.target = "new";
+                    // create the response item container
+                    const responseItem = document.createElement('div');
+                    responseItem.classList.add('response-item');
 
-                    // Create the link for the original url.
+                    //create original URL section
+                    const originalSection = document.createElement('div');
+                    originalSection.classList.add('url-section');
+                    
+                    const originalLabel = document.createElement('span');
+                    originalLabel.classList.add('url-label');
+                    originalLabel.textContent = 'Original:';
+                    
                     const originalUrlLink = document.createElement('a');
                     originalUrlLink.href = urlValue;
                     originalUrlLink.textContent = urlValue;
-                    originalUrlLink.target = "new";
+                    originalUrlLink.target = "_blank";
+                    originalUrlLink.classList.add('url-link', 'original-url');
 
-                    // Create an arrow or something to show we're going from A -> B.
-                    const arrowText = document.createElement('span');
-                    arrowText.textContent = " -> ";
+                    originalSection.appendChild(originalLabel);
+                    originalSection.appendChild(originalUrlLink);
 
-                    // Create a new container to put everything together within
-                    const newDiv = document.createElement('div');
-                    newDiv.classList.add('responseItem');
-
-                    // Append items into container
-                    newDiv.appendChild(originalUrlLink);
-                    newDiv.appendChild(arrowText);
-                    newDiv.appendChild(shortUrlLink);
+                    // Create shortened URL section
+                    const shortSection = document.createElement('div');
+                    shortSection.classList.add('url-section');
                     
-                    // Append the end result in the response container.
-                    // to reset every time rather than keeping list, uncomment the following
-                    // responseContainer.textContent = '';
-                    responseContainer.appendChild(newDiv);
+                    const shortLabel = document.createElement('span');
+                    shortLabel.classList.add('url-label');
+                    shortLabel.textContent = 'Shortened:';
+                    
+                    const shortUrlLink = document.createElement('a');
+                    shortUrlLink.href = shortUrl;
+                    shortUrlLink.textContent = shortUrl;
+                    shortUrlLink.target = "_blank";
+                    shortUrlLink.classList.add('url-link', 'short-url');
+
+                    // copy button
+                    const copyButton = document.createElement('button');
+                    copyButton.textContent = 'Copy';
+                    copyButton.classList.add('copy-btn');
+                    copyButton.onclick = () => {
+                        navigator.clipboard.writeText(shortUrl);
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy';
+                        }, 2000);
+                    };
+
+                    shortSection.appendChild(shortLabel);
+                    shortSection.appendChild(shortUrlLink);
+                    shortSection.appendChild(copyButton);
+
+                    // append sections to response item
+                    responseItem.appendChild(originalSection);
+                    responseItem.appendChild(shortSection);
+                    
+                    // append the result to the response container
+                    responseContainer.appendChild(responseItem);
+
+                    // Clear user input from main form
+                    urlInput.value = '';
+                    urlInput.focus();
                 }
                 catch (error) {
                     console.error(error.message);
                 }
             }
 
-            /**
+            /*
              * Clears the response window and resets the url parameter.
              */
             function clearResponses() {
@@ -91,16 +125,33 @@
         </script>
     </head>
     <body>
-        <div id="wrapper">
-            <img src="./happyface.png" id="awesomeimageforthewebsite" />
-            <h1 id="main-header">oh my hod bruh Url shortener project</h1>
-            <label id="main-label" for="url">Enter Url: </label>
-            <input type="text" id="url" required>
-            <button id="submitButton" onClick="submitQuery()" type="submit">shorten the url</button>
-            <button id="clearButton" onClick="clearResponses()">RESET BUTTON</button>
-            <p id="link"></p>
-        </div>        
-
-        <div id="responses"></div>
+        <div class="container">
+            <header class="header">
+                <h1 class="title">URL Shortener</h1>
+                <p class="subtitle">Transform long URLs into short, shareable links</p>
+            </header>
+            
+            <main class="main-content">
+                <div class="input-section">
+                    <input 
+                        type="url" 
+                        id="url" 
+                        placeholder="Enter your URL here..." 
+                        class="url-input"
+                        required
+                    >
+                    <div class="button-group">
+                        <button id="submitButton" onClick="submitQuery()" type="submit" class="btn-primary">
+                            Shorten URL
+                        </button>
+                        <button id="clearButton" onClick="clearResponses()" class="btn-secondary">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="responses" class="responses-section"></div>
+            </main>
+        </div>
     </body>
 </html>

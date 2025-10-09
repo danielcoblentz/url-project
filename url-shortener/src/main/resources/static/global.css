@@ -1,63 +1,242 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #AAAAAA;
-}
-
-#wrapper {
-    text-align: center;
-    width: 800px;
-    padding: 30px;
-    background-color: #555555;
-    margin: 0px auto;
-    border: 1px solid #bbbbbb;
-}
-
-#main-header {
-    font-family: 'Courier New', Courier, monospace;
-    color: #dddddd;
-}
-
-#responses {
-    width: 800px;
-    padding: 0px 30px;
-    text-align: left;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #ffffff;
-    margin: 0px auto;
-    border: 1px solid #bbbbbb;
+    color: #37352f;
+    line-height: 1.6;
+    font-size: 16px;
 }
 
-#main-label {
+/* Container and layout */
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    min-height: 100vh;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.title {
+    font-size: 48px;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #6b7280;
+    font-weight: 400;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Main content */
+.main-content {
+    width: 100%;
+}
+
+/* Input section */
+.input-section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.url-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: inherit;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.url-input:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.url-input::placeholder {
+    color: #9ca3af;
+}
+
+/* Button styles */
+.button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background-color: #000000;
     color: #ffffff;
-    font-weight: bold;
 }
 
-#url {
-    padding: 5px;
+.btn-primary:hover {
+    background-color: #1f2937;
+    transform: translateY(-1px);
 }
 
-#submitButton {
-    background-color: yellow;
-    color: red;
-    padding: 8px;
-    border-color: blue;
-    border-width: 1px;
-    font-weight: bold;
+.btn-secondary {
+    background-color: #ffffff;
+    color: #374151;
+    border-color: #d1d5db;
 }
 
-#clearButton {
-    background-color: blue;
-    color: yellow;
-    font-weight: bold;
-    border-color: purple;
-    border-width: 1px;
-    padding: 8px;
-    margin-left: 2px;    
+.btn-secondary:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
 }
 
-.responseItem {
-    padding: 2px 2px;
+/* Responses section */
+.responses-section {
+    width: 100%;
 }
 
-#awesomeimageforthewebsite { 
-    width: 150px;
-    margin: 0px auto;
+.response-item {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.url-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.url-section:last-child {
+    margin-bottom: 0;
+}
+
+.url-label {
+    font-weight: 500;
+    color: #374151;
+    min-width: 80px;
+    font-size: 14px;
+}
+
+.url-link {
+    color: #000000;
+    text-decoration: none;
+    word-break: break-all;
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    background-color: #f9fafb;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.url-link:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.original-url {
+    color: #6b7280;
+}
+
+.short-url {
+    color: #000000;
+    font-weight: 500;
+}
+
+.copy-btn {
+    padding: 6px 12px;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.copy-btn:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.copy-btn:active {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/*add more media queries here if needed in the future*/
+@media (max-width: 768px) {
+    .container {
+        padding: 40px 16px;
+    }
+    
+    .title {
+        font-size: 36px;
+    }
+    
+    .subtitle {
+        font-size: 16px;
+    }
+    
+    .input-section {
+        padding: 24px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .url-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .url-label {
+        min-width: auto;
+    }
+    
+    .url-link {
+        min-width: auto;
+        width: 100%;
+    }
 }

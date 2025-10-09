@@ -1,6 +1,6 @@
 package com.SWE.url_shortener.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.SWE.url_shortener.service.Urlservice;
@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import java.net.URI;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 //DTO for accepting input from user
 record urlrecord(String url) {
 }
 
-@RestController
+@Controller
 public class URLcontroller {
     private final Urlservice urlService;
 
@@ -23,6 +26,7 @@ public class URLcontroller {
     }
 
     @PostMapping("/shorten")
+    @ResponseBody
     public String shortenString(@RequestBody urlrecord req) {
         String shortCode = urlService.shortenUrl(req.url());
         return "Short URL: http://localhost:8080/" + shortCode;
