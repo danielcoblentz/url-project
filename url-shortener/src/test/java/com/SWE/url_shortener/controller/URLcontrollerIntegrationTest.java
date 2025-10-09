@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import com.SWE.url_shortener.repository.UrlRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,5 +98,34 @@ class URLcontrollerIntegrationTest {
         assertEquals(1, urlRepository.findAll().stream()
                 .filter(url -> url.getOriginalUrl().equals(originalUrl))
                 .count(), "Only one entry should exist for the same URL");
+    }
+
+    @Test
+    void testRedirectToOriginalUrl() throws Exception {
+        // Given: A URL that has been shortened
+        String originalUrl = "https://github.com";
+        urlrecord request = new urlrecord(originalUrl);
+
+        // Shorten the URL first
+        String response = mockMvc.perform(post("/shorten")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        // Extract the short code from the response
+        String shortCode = response.substring("Short URL: http://localhost:8080/".length());
+
+        // When: We access the shortened URL
+        mockMvc.perform(get("/" + shortCode))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", originalUrl));
+    }
+
+    @Test
+    void testRedirectWithInvalidShortCode() throws Exception {
+        // When: We try to access a non-existent short code
+        mockMvc.perform(get("/invalidcode123"))
+                .andExpect(status().isNotFound());
     }
 }

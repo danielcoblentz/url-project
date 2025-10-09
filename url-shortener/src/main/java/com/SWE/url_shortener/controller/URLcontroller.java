@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.SWE.url_shortener.service.Urlservice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import java.net.URI;
 
 //DTO for accepting input from user
 record urlrecord(String url) {
@@ -24,15 +28,23 @@ public class URLcontroller {
         return "Short URL: http://localhost:8080/" + shortCode;
     }
 
-    // @GetMapping("/{code:[a-zA-Z0-9]+}")
-    // public ResponseEntity<Void> redirect(@PathVariable String code) {
-    //     // get the prev origional URL from the DB then redirect to it
-
-    // }
-
-    // delete this later its just for testing
-    @GetMapping("/testing")
-    public String testMethod() {
-        return "its working!";
+    @GetMapping("/{shortCode}")
+    public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
+        String originalUrl = urlService.getOriginalUrl(shortCode);
+        
+        if (originalUrl == null) {
+            // Short code not found, return 404
+            return ResponseEntity.notFound().build();
+        }
+        
+        try {
+            // Redirect to the original URL
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(originalUrl))
+                    .build();
+        } catch (IllegalArgumentException e) {
+            // Invalid URL format, return 400 Bad Request
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

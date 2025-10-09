@@ -38,6 +38,13 @@ public class Urlservice {
                 });
     }
 
+    // returns original URL for a given short code
+    public String getOriginalUrl(String shortCode) {
+        return urlRepository.findByShortCode(shortCode)
+                .map(url::getOriginalUrl)
+                .orElse(null);
+    }
+
     private String generateShortCode() {
         StringBuilder sb = new StringBuilder(CODE_LENGTH);
         for (int i = 0; i < CODE_LENGTH; i++) {
