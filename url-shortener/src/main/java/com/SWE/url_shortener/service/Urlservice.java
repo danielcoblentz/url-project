@@ -19,6 +19,10 @@ public class Urlservice {
 
     // returns shortCode
     public String shortenUrl(String originalUrl) {
+        if (originalUrl == null || originalUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("URL cannot be null or empty");
+        }
+        
         String normalized = normalize(originalUrl);
 
         // If original URL already exists, return existing short code
@@ -54,6 +58,9 @@ public class Urlservice {
     }
 
     private String normalize(String url) {
+        if (url == null) {
+            throw new IllegalArgumentException("URL cannot be null");
+        }
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             return "http://" + url;
         }

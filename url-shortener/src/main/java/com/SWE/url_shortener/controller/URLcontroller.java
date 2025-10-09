@@ -27,9 +27,13 @@ public class URLcontroller {
 
     @PostMapping("/shorten")
     @ResponseBody
-    public String shortenString(@RequestBody urlrecord req) {
-        String shortCode = urlService.shortenUrl(req.url());
-        return "Short URL: http://localhost:8080/" + shortCode;
+    public ResponseEntity<String> shortenString(@RequestBody urlrecord req) {
+        try {
+            String shortCode = urlService.shortenUrl(req.url());
+            return ResponseEntity.ok("Short URL: http://localhost:8080/" + shortCode);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{shortCode}")
