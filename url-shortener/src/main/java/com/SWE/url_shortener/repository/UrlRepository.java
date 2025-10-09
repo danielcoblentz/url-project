@@ -8,6 +8,6 @@ public interface UrlRepository extends JpaRepository<url, Long> {
     Optional<url> findByShortCode(String shortCode);
     Optional<url> findByOriginalUrl(String originalUrl);
 
-    // Check if a shortCode already exists 
+   //does it already exist? --> true or false
     boolean existsByShortCode(String shortCode);
 }

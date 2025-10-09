@@ -17,7 +17,7 @@ public class Urlservice {
         this.urlRepository = urlRepository;
     }
 
-    // Contract: input originalUrl (may be missing scheme), returns shortCode
+    // returns shortCode
     public String shortenUrl(String originalUrl) {
         String normalized = normalize(originalUrl);
 
