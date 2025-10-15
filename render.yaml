@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: url-shortener
+    env: docker
+    repo: https://github.com/danielcoblentz/url-project
+    branch: main
+    rootDir: url-shortener
+    dockerfilePath: url-shortener/Dockerfile
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
