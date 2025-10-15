@@ -2,7 +2,6 @@ package com.SWE.url_shortener.service;
 
 import com.SWE.url_shortener.model.url;
 import com.SWE.url_shortener.repository.UrlRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 class UrlserviceTest {
@@ -29,7 +29,6 @@ class UrlserviceTest {
         // Given
         String originalUrl = "https://example.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
         when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
@@ -67,7 +66,6 @@ class UrlserviceTest {
         String originalUrl = "example.com";
         String expectedNormalizedUrl = "http://example.com";
         when(urlRepository.findByOriginalUrl(expectedNormalizedUrl)).thenReturn(Optional.empty());
-        when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
         when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
@@ -113,18 +111,21 @@ class UrlserviceTest {
         // Given
         String originalUrl = "https://example.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.existsByShortCode(anyString()))
-                .thenReturn(true)  // First code exists
-                .thenReturn(true)  // Second code exists
-                .thenReturn(false); // Third code is unique
-        when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    // Simulate two failed attempts due to unique constraint on flush(), then succeed.
+    when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    doThrow(new DataIntegrityViolationException("unique collision"))
+        .doThrow(new DataIntegrityViolationException("unique collision"))
+        .doNothing()
+        .when(urlRepository).flush();
 
         // When
         String shortCode = urlService.shortenUrl(originalUrl);
 
         // Then
         assertNotNull(shortCode);
-        verify(urlRepository, times(3)).existsByShortCode(anyString());
+        // save + flush should have been attempted three times (2 failures, 1 success)
+        verify(urlRepository, times(3)).save(any(url.class));
+        verify(urlRepository, times(3)).flush();
     }
 
     @Test
@@ -132,7 +133,6 @@ class UrlserviceTest {
         // Given
         String originalUrl = "google.com";
         when(urlRepository.findByOriginalUrl("http://google.com")).thenReturn(Optional.empty());
-        when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
         when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
@@ -147,7 +147,6 @@ class UrlserviceTest {
         // Given
         String originalUrl = "https://secure.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
         when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When

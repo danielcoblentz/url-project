@@ -29,16 +29,23 @@ public class Urlservice {
         return urlRepository.findByOriginalUrl(normalized)
                 .map(url::getShortCode)
                 .orElseGet(() -> {
-                    String shortCode;
-                    do {
-                        shortCode = generateShortCode();
-                    } while (urlRepository.existsByShortCode(shortCode));
 
-                    url newUrl = new url();
-                    newUrl.setOriginalUrl(normalized);
-                    newUrl.setShortCode(shortCode);
-                    urlRepository.save(newUrl);
-                    return shortCode;
+                    final int MAX_ATTEMPTS = 6; 
+                    for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                        String shortCode = generateShortCode();
+                        url newUrl = new url();
+                        newUrl.setOriginalUrl(normalized);
+                        newUrl.setShortCode(shortCode);
+                        try {
+                            url saved = urlRepository.save(newUrl);
+                           
+                            urlRepository.flush();
+                            return saved.getShortCode();
+                        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+        
+                        } 
+                    }
+                    throw new IllegalStateException("Unable to generate a unique short code after " + MAX_ATTEMPTS + " attempts");
                 });
     }
 

@@ -1,13 +1,13 @@
-package com.SWE.url_shortener.controller;
+// package com.SWE.url_shortener.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+// import org.springframework.stereotype.Controller;
+// import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
-public class HomeController {
+// @Controller
+// public class HomeController {
     
-    @RequestMapping("/")
-    public String index() {
-        return "forward:/index.html";
-    }
-}
+//     @RequestMapping("/")
+//     public String index() {
+//         return "forward:/index.html";
+//     }
+// }

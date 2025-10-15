@@ -1,4 +1,3 @@
-/* Reset and base styles */
 * {
     margin: 0;
     padding: 0;
@@ -120,7 +119,7 @@ body {
     border-color: #9ca3af;
 }
 
-/* Responses section */
+/* responses section */
 .responses-section {
     width: 100%;
 }
