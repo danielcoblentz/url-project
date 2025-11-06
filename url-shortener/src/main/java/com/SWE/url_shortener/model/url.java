@@ -10,12 +10,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import lombok.Data;
+
 
 @Entity
 @Table(name = "urls")
-@Data
-public class Url {
+public class url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -30,7 +29,7 @@ public class Url {
     @Column(nullable = false)
     private LocalDateTime createdTime = LocalDateTime.now();
 
-    public Url() {
+    public url() {
     }
 
     // Manual getters and setters (in case Lombok isn't working)

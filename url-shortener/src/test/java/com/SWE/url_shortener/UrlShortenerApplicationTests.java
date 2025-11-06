@@ -8,6 +8,7 @@ class UrlShortenerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// basic test to ensure app starts
 	}
 
 }

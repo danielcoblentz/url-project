@@ -1,6 +1,6 @@
 package com.SWE.url_shortener.service;
 
-import com.SWE.url_shortener.model.Url;
+import com.SWE.url_shortener.model.url;
 import com.SWE.url_shortener.repository.UrlRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,18 +27,18 @@ public class Urlservice {
 
         // If original URL already exists, return existing short code
         return urlRepository.findByOriginalUrl(normalized)
-                .map(Url::getShortCode)
+                .map(url::getShortCode)
                 .orElseGet(() -> {
                         // Increase max attempts and improve error handling
                     final int MAX_ATTEMPTS = 20; 
                     for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
                         String shortCode = generateShortCode();
                         if (!urlRepository.existsByShortCode(shortCode)) {
-                            Url url = new Url();
+                            url url = new url();
                             url.setOriginalUrl(normalized);
                             url.setShortCode(shortCode);
                             try {
-                                Url savedUrl = urlRepository.save(url);
+                                url savedUrl = urlRepository.save(url);
                                 return savedUrl.getShortCode();
                             } catch (Exception ex) {
                                 System.err.println("Attempt " + (attempt + 1) + " failed: " + ex.getMessage());
@@ -51,7 +51,7 @@ public class Urlservice {
 
     // returns original URL for a given short code
     public String getOriginalUrl(String shortCode) {
-        return urlRepository.findByShortCode(shortCode).map(Url::getOriginalUrl).orElse(null);
+        return urlRepository.findByShortCode(shortCode).map(url::getOriginalUrl).orElse(null);
     }
 
     private String generateShortCode() {
