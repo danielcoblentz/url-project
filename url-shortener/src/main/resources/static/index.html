@@ -29,7 +29,7 @@
                 try {
                 
 
-                    const response = await fetch("http://localhost:8080/shorten", {
+                    const response = await fetch("http://localhost:8080/api/url/shorten", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -38,7 +38,7 @@
                     }); 
 
                     if (!response.ok) {
-                        console.error("Failed - error: " . response.status);
+                        console.error("Failed - error: " + response.status); 
                         throw new Error(`Response status: ${response.status}`);
                     }
                     

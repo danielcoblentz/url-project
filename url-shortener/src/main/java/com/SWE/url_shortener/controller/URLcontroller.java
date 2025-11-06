@@ -1,17 +1,17 @@
 package com.SWE.url_shortener.controller;
 
+import com.SWE.url_shortener.service.Urlservice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import com.SWE.url_shortener.service.Urlservice;
 
 import java.net.URI;
 
 record urlrecord(String url) {}
 
 @Controller
+@RequestMapping("/api/url")
 public class URLcontroller {
     private final Urlservice urlService;
 
@@ -49,9 +49,11 @@ public class URLcontroller {
         }
     }
 
-    // Prevent the browser's automatic /favicon.ico request from hitting the redirect mapping
+    // thsi is a weird edge case i ran into it prevents the browser's automatic /favicon.ico request from hitting the redirect mapping
     @GetMapping("/favicon.ico")
     @ResponseBody
     public void noFavicon() {
     }
+
+  
 }

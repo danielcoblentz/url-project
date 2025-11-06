@@ -15,7 +15,7 @@ import lombok.Data;
 @Entity
 @Table(name = "urls")
 @Data
-public class url {
+public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -30,7 +30,40 @@ public class url {
     @Column(nullable = false)
     private LocalDateTime createdTime = LocalDateTime.now();
 
-    public url() {
+    public Url() {
+    }
+
+    // Manual getters and setters (in case Lombok isn't working)
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getShortCode() {
+        return shortCode;
+    }
+
+    public void setShortCode(String shortCode) {
+        this.shortCode = shortCode;
+    }
+
+    public String getOriginalUrl() {
+        return originalUrl;
+    }
+
+    public void setOriginalUrl(String originalUrl) {
+        this.originalUrl = originalUrl;
+    }
+
+    public LocalDateTime getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
     }
 }
 

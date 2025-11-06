@@ -1,6 +1,6 @@
 package com.SWE.url_shortener.service;
 
-import com.SWE.url_shortener.model.url;
+import com.SWE.url_shortener.model.Url;
 import com.SWE.url_shortener.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ class UrlserviceTest {
         // Given
         String originalUrl = "https://example.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
         String shortCode = urlService.shortenUrl(originalUrl);
@@ -37,7 +37,7 @@ class UrlserviceTest {
         // Then
         assertNotNull(shortCode);
         assertEquals(7, shortCode.length());
-        verify(urlRepository).save(any(url.class));
+        verify(urlRepository).save(any(Url.class));
         verify(urlRepository).findByOriginalUrl(originalUrl);
     }
 
@@ -46,7 +46,7 @@ class UrlserviceTest {
         // Given
         String originalUrl = "https://example.com";
         String existingShortCode = "abc123x";
-        url existingUrl = new url();
+        Url existingUrl = new Url();
         existingUrl.setOriginalUrl(originalUrl);
         existingUrl.setShortCode(existingShortCode);
         
@@ -57,7 +57,7 @@ class UrlserviceTest {
 
         // Then
         assertEquals(existingShortCode, shortCode);
-        verify(urlRepository, never()).save(any(url.class));
+        verify(urlRepository, never()).save(any(Url.class));
     }
 
     @Test
@@ -66,7 +66,7 @@ class UrlserviceTest {
         String originalUrl = "example.com";
         String expectedNormalizedUrl = "http://example.com";
         when(urlRepository.findByOriginalUrl(expectedNormalizedUrl)).thenReturn(Optional.empty());
-        when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
         urlService.shortenUrl(originalUrl);
@@ -80,7 +80,7 @@ class UrlserviceTest {
         // Given
         String shortCode = "abc123x";
         String originalUrl = "https://example.com";
-        url urlEntity = new url();
+        Url urlEntity = new Url();
         urlEntity.setShortCode(shortCode);
         urlEntity.setOriginalUrl(originalUrl);
         
@@ -112,7 +112,7 @@ class UrlserviceTest {
         String originalUrl = "https://example.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
     // Simulate two failed attempts due to unique constraint on flush(), then succeed.
-    when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
     doThrow(new DataIntegrityViolationException("unique collision"))
         .doThrow(new DataIntegrityViolationException("unique collision"))
         .doNothing()
@@ -124,7 +124,7 @@ class UrlserviceTest {
         // Then
         assertNotNull(shortCode);
         // save + flush should have been attempted three times (2 failures, 1 success)
-        verify(urlRepository, times(3)).save(any(url.class));
+        verify(urlRepository, times(3)).save(any(Url.class));
         verify(urlRepository, times(3)).flush();
     }
 
@@ -133,7 +133,7 @@ class UrlserviceTest {
         // Given
         String originalUrl = "google.com";
         when(urlRepository.findByOriginalUrl("http://google.com")).thenReturn(Optional.empty());
-        when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
         urlService.shortenUrl(originalUrl);
@@ -147,7 +147,7 @@ class UrlserviceTest {
         // Given
         String originalUrl = "https://secure.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.save(any(url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
         urlService.shortenUrl(originalUrl);

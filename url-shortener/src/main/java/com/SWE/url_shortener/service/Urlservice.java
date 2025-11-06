@@ -1,7 +1,7 @@
 package com.SWE.url_shortener.service;
 
+import com.SWE.url_shortener.model.Url;
 import com.SWE.url_shortener.repository.UrlRepository;
-import com.SWE.url_shortener.model.url;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -27,23 +27,23 @@ public class Urlservice {
 
         // If original URL already exists, return existing short code
         return urlRepository.findByOriginalUrl(normalized)
-                .map(url::getShortCode)
+                .map(Url::getShortCode)
                 .orElseGet(() -> {
-
-                    final int MAX_ATTEMPTS = 6; 
+                        // Increase max attempts and improve error handling
+                    final int MAX_ATTEMPTS = 20; 
                     for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
                         String shortCode = generateShortCode();
-                        url newUrl = new url();
-                        newUrl.setOriginalUrl(normalized);
-                        newUrl.setShortCode(shortCode);
-                        try {
-                            url saved = urlRepository.save(newUrl);
-                           
-                            urlRepository.flush();
-                            return saved.getShortCode();
-                        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-        
-                        } 
+                        if (!urlRepository.existsByShortCode(shortCode)) {
+                            Url url = new Url();
+                            url.setOriginalUrl(normalized);
+                            url.setShortCode(shortCode);
+                            try {
+                                Url savedUrl = urlRepository.save(url);
+                                return savedUrl.getShortCode();
+                            } catch (Exception ex) {
+                                System.err.println("Attempt " + (attempt + 1) + " failed: " + ex.getMessage());
+                            }
+                        }
                     }
                     throw new IllegalStateException("Unable to generate a unique short code after " + MAX_ATTEMPTS + " attempts");
                 });
@@ -51,9 +51,7 @@ public class Urlservice {
 
     // returns original URL for a given short code
     public String getOriginalUrl(String shortCode) {
-        return urlRepository.findByShortCode(shortCode)
-                .map(url::getOriginalUrl)
-                .orElse(null);
+        return urlRepository.findByShortCode(shortCode).map(Url::getOriginalUrl).orElse(null);
     }
 
     private String generateShortCode() {

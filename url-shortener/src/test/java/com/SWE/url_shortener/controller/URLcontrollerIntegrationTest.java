@@ -29,26 +29,26 @@ class URLcontrollerIntegrationTest {
 
     @Test
     void testShortenUrlInsertsIntoDatabase() throws Exception {
-        // Given: A URL to shorten
+        // given A URL to shorten
         String originalUrl = "https://example.com";
         urlrecord request = new urlrecord(originalUrl);
 
-        // When: We call the shorten endpoint
+        // When we call the shorten endpoint
         String response = mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        // Then: The URL should be inserted into the database
+        // Then The URL should be inserted into the database
         assertTrue(urlRepository.findByOriginalUrl(originalUrl).isPresent(), 
                    "URL should be saved in the database");
         
-        // And: The response should contain a short URL
+        // and The response should contain a short URL
         assertTrue(response.startsWith("Short URL: http://localhost:8080/"), 
                    "Response should contain the short URL");
         
-        // And: The short code should exist in the database
+        // and The short code should exist in the database
         String shortCode = response.substring("Short URL: http://localhost:8080/".length());
         assertTrue(urlRepository.existsByShortCode(shortCode), 
                    "Short code should exist in the database");
@@ -61,20 +61,20 @@ class URLcontrollerIntegrationTest {
         String expectedNormalizedUrl = "http://google.com";
         urlrecord request = new urlrecord(inputUrl);
 
-        // When: We call the shorten endpoint
+        // when: We call the shorten endpoint
         mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        // Then: The normalized URL should be saved in the database
+        // then: The normalized URL should be saved in the database
         assertTrue(urlRepository.findByOriginalUrl(expectedNormalizedUrl).isPresent(), 
                    "Normalized URL should be saved in the database");
     }
 
     @Test
     void testShortenSameUrlTwiceReturnsExistingShortCode() throws Exception {
-        // Given: A URL to shorten
+        // given: A URL to shorten
         String originalUrl = "https://stackoverflow.com";
         urlrecord request = new urlrecord(originalUrl);
 
@@ -91,10 +91,10 @@ class URLcontrollerIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        // Then: Both responses should be identical
+        // then: Both responses should be identical
         assertEquals(response1, response2, "Same URL should return the same short code");
         
-        // And: Only one entry should exist in the database
+        // and: Only one entry should exist in the database
         assertEquals(1, urlRepository.findAll().stream()
                 .filter(url -> url.getOriginalUrl().equals(originalUrl))
                 .count(), "Only one entry should exist for the same URL");
@@ -102,21 +102,21 @@ class URLcontrollerIntegrationTest {
 
     @Test
     void testRedirectToOriginalUrl() throws Exception {
-        // Given: A URL that has been shortened
+        // given: A URL that has been shortened
         String originalUrl = "https://github.com";
         urlrecord request = new urlrecord(originalUrl);
 
-        // Shorten the URL first
+        // shorten the URL first
         String response = mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        // Extract the short code from the response
+        // extract the short code from the response
         String shortCode = response.substring("Short URL: http://localhost:8080/".length());
 
-        // When: We access the shortened URL
+        // Wwen: We access the shortened URL
         mockMvc.perform(get("/" + shortCode))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", originalUrl));
@@ -124,7 +124,7 @@ class URLcontrollerIntegrationTest {
 
     @Test
     void testRedirectWithInvalidShortCode() throws Exception {
-        // When: We try to access a non-existent short code
+        // when: We try to access a non-existent short code
         mockMvc.perform(get("/invalidcode123"))
                 .andExpect(status().isNotFound());
     }

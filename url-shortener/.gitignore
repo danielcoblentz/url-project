@@ -31,3 +31,22 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment variables and credentials
+.env
+.env.*
+*.env
+application-local.properties
+application-*.properties
+src/main/resources/application-local.properties
+
+# Database files
+*.db
+*.sql
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
