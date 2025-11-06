@@ -44,6 +44,10 @@
                     
                     const result = await response.text(); 
                     const shortUrl = result.replace(/^Short URL:\s*/, '').trim();
+                    
+                    // Extract just the short code from the full URL
+                    const shortCode = shortUrl.split('/').pop();
+                    const redirectUrl = `http://localhost:8080/api/url/${shortCode}`;
 
                     // create the response item container
                     const responseItem = document.createElement('div');
@@ -75,7 +79,7 @@
                     shortLabel.textContent = 'Shortened:';
                     
                     const shortUrlLink = document.createElement('a');
-                    shortUrlLink.href = shortUrl;
+                    shortUrlLink.href = redirectUrl;
                     shortUrlLink.textContent = shortUrl;
                     shortUrlLink.target = "_blank";
                     shortUrlLink.classList.add('url-link', 'short-url');
@@ -85,7 +89,7 @@
                     copyButton.textContent = 'Copy';
                     copyButton.classList.add('copy-btn');
                     copyButton.onclick = () => {
-                        navigator.clipboard.writeText(shortUrl);
+                        navigator.clipboard.writeText(redirectUrl);
                         copyButton.textContent = 'Copied!';
                         setTimeout(() => {
                             copyButton.textContent = 'Copy';
