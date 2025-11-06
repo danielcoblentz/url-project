@@ -25,7 +25,7 @@ class URLcontrollerAdvancedTest {
 
     @Test
     void testHomePage() throws Exception {
-        // When/Then: Home page should load
+        // check home page loads
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(forwardedUrl("/index.html"));
@@ -33,7 +33,7 @@ class URLcontrollerAdvancedTest {
 
     @Test
     void testShortenUrl_EmptyBody() throws Exception {
-        // When/Then: Empty request body should return bad request
+        // empty request should fail
         mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
@@ -43,7 +43,7 @@ class URLcontrollerAdvancedTest {
 
     @Test
     void testShortenUrl_ValidUrl() throws Exception {
-        // When/Then: Valid URL should return short URL
+        // valid URL should return shortened link
         mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"url\": \"https://example.com\"}"))

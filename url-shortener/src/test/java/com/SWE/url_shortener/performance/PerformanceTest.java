@@ -30,10 +30,9 @@ class PerformanceTest {
 
     @Test
     void testShortenUrl_ResponseTime() throws Exception {
-        // Given
+        // test response time
         TestUrlRecord request = new TestUrlRecord("https://performance-test.com");
         
-        // When
         long startTime = System.currentTimeMillis();
         
         mockMvc.perform(post("/shorten")
@@ -44,19 +43,19 @@ class PerformanceTest {
         long endTime = System.currentTimeMillis();
         long responseTime = endTime - startTime;
         
-        // Then: Should respond within reasonable time (less than 1 second)
+        // should be under 1 second
         assertTrue(responseTime < 1000, 
                    "Response time should be less than 1000ms, was: " + responseTime + "ms");
     }
 
     @Test
     void testConcurrentRequests() throws Exception {
-        // Given: Multiple concurrent requests
+        // multiple requests at once
         int numberOfRequests = 10;
         @SuppressWarnings("unchecked")
         CompletableFuture<Void>[] futures = new CompletableFuture[numberOfRequests];
         
-        // When: Execute requests concurrently
+        // run requests concurrently
         for (int i = 0; i < numberOfRequests; i++) {
             final int requestId = i;
             futures[i] = CompletableFuture.runAsync(() -> {
@@ -72,18 +71,18 @@ class PerformanceTest {
             });
         }
         
-        // Then: All requests should complete successfully
+        // all should complete
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures);
         assertDoesNotThrow(() -> allFutures.get(10, TimeUnit.SECONDS));
     }
 
     @Test
     void testBulkUrlShortening() throws Exception {
-        // Given: Large number of URLs to shorten
+        // bulk URL processing
         int numberOfUrls = 50;
         long startTime = System.currentTimeMillis();
         
-        // When: Shorten many URLs
+        // shorten many URLs
         for (int i = 0; i < numberOfUrls; i++) {
             TestUrlRecord request = new TestUrlRecord("https://bulk-test-" + i + ".com");
             mockMvc.perform(post("/shorten")
@@ -96,7 +95,7 @@ class PerformanceTest {
         long totalTime = endTime - startTime;
         double averageTime = (double) totalTime / numberOfUrls;
         
-        // Then: Average time per request should be reasonable
+        // average should be reasonable
         assertTrue(averageTime < 100, 
                    "Average time per request should be less than 100ms, was: " + averageTime + "ms");
     }

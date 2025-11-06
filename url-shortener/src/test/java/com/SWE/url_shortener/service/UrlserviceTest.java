@@ -26,15 +26,15 @@ class UrlserviceTest {
 
     @Test
     void testShortenUrl_NewUrl() {
-        // Given
+        // new URL to shorten
         String originalUrl = "https://example.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
+        // shorten it
         String shortCode = urlService.shortenUrl(originalUrl);
 
-        // Then
+        // check result
         assertNotNull(shortCode);
         assertEquals(7, shortCode.length());
         verify(urlRepository).save(any(Url.class));
@@ -43,7 +43,7 @@ class UrlserviceTest {
 
     @Test
     void testShortenUrl_ExistingUrl() {
-        // Given
+        // existing URL
         String originalUrl = "https://example.com";
         String existingShortCode = "abc123x";
         Url existingUrl = new Url();
@@ -52,32 +52,30 @@ class UrlserviceTest {
         
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.of(existingUrl));
 
-        // When
+        // should return existing code
         String shortCode = urlService.shortenUrl(originalUrl);
 
-        // Then
         assertEquals(existingShortCode, shortCode);
         verify(urlRepository, never()).save(any(Url.class));
     }
 
     @Test
     void testShortenUrl_NormalizesUrl() {
-        // Given
+        // URL without protocol
         String originalUrl = "example.com";
         String expectedNormalizedUrl = "http://example.com";
         when(urlRepository.findByOriginalUrl(expectedNormalizedUrl)).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
         urlService.shortenUrl(originalUrl);
 
-        // Then
+        // should normalize URL
         verify(urlRepository).findByOriginalUrl(expectedNormalizedUrl);
     }
 
     @Test
     void testGetOriginalUrl_Found() {
-        // Given
+        // existing short code
         String shortCode = "abc123x";
         String originalUrl = "https://example.com";
         Url urlEntity = new Url();
@@ -86,73 +84,62 @@ class UrlserviceTest {
         
         when(urlRepository.findByShortCode(shortCode)).thenReturn(Optional.of(urlEntity));
 
-        // When
         String result = urlService.getOriginalUrl(shortCode);
 
-        // Then
         assertEquals(originalUrl, result);
     }
 
     @Test
     void testGetOriginalUrl_NotFound() {
-        // Given
+        // nonexistent short code
         String shortCode = "nonexistent";
         when(urlRepository.findByShortCode(shortCode)).thenReturn(Optional.empty());
 
-        // When
         String result = urlService.getOriginalUrl(shortCode);
 
-        // Then
         assertNull(result);
     }
 
     @Test
     void testShortenUrl_GeneratesUniqueCode() {
-        // Given
+        // test collision handling
         String originalUrl = "https://example.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-    // Simulate two failed attempts due to unique constraint on flush(), then succeed.
-    when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
-    doThrow(new DataIntegrityViolationException("unique collision"))
-        .doThrow(new DataIntegrityViolationException("unique collision"))
-        .doNothing()
-        .when(urlRepository).flush();
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doThrow(new DataIntegrityViolationException("unique collision"))
+            .doThrow(new DataIntegrityViolationException("unique collision"))
+            .doNothing()
+            .when(urlRepository).flush();
 
-        // When
         String shortCode = urlService.shortenUrl(originalUrl);
 
-        // Then
+        // should retry after collisions
         assertNotNull(shortCode);
-        // save + flush should have been attempted three times (2 failures, 1 success)
         verify(urlRepository, times(3)).save(any(Url.class));
         verify(urlRepository, times(3)).flush();
     }
 
     @Test
     void testNormalize_AddsHttpPrefix() {
-        // Given
+        // URL without http
         String originalUrl = "google.com";
         when(urlRepository.findByOriginalUrl("http://google.com")).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
         urlService.shortenUrl(originalUrl);
 
-        // Then
         verify(urlRepository).findByOriginalUrl("http://google.com");
     }
 
     @Test
     void testNormalize_PreservesHttpsPrefix() {
-        // Given
+        // HTTPS URL should stay unchanged
         String originalUrl = "https://secure.com";
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
         urlService.shortenUrl(originalUrl);
 
-        // Then
         verify(urlRepository).findByOriginalUrl(originalUrl);
     }
 }
