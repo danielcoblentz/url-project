@@ -50,3 +50,16 @@ src/main/resources/application-local.properties
 *.iml
 *.ipr
 *.iws
+
+# Environment variables and credentials
+.env
+.env.*
+*.env
+env.properties
+.env.example
+.envrc
+environment.properties
+secrets.properties
+application-local.properties
+application-*.properties
+src/main/resources/application-local.properties

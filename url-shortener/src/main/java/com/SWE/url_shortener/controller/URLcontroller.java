@@ -49,7 +49,7 @@ public class URLcontroller {
         }
     }
 
-    // thsi is a weird edge case i ran into it prevents the browser's automatic /favicon.ico request from hitting the redirect mapping
+    // this is a weird edge case I ran into it prevents the browser's automatic /favicon.ico request from hitting the redirect mapping
     @GetMapping("/favicon.ico")
     @ResponseBody
     public void noFavicon() {
