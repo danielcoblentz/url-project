@@ -33,3 +33,11 @@ Description: Redirect to the original URL.
 ### `/testing`:
 - just for testing to verfiy the program compiles (remove later for presentation!)
 
+command on MAC:
+cd into folder
+
+chmod +x mvnw
+./mvnw test
+
+./mvnw clean compile
+./mvnw spring-boot:run
