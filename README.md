@@ -1,43 +1,32 @@
-# URL Shortener – API Docs
+# URL Shortener
 
-## Database 
+Small Spring Boot service that creates short links backed by Postgres (Supabase-friendly) with basic click tracking.
 
-| Column         | Type          | Notes             |
-|----------------|---------------|-------------------|
-| `id`           | BIGINT (PK)   | Auto-generated    |
-| `short_code`   | VARCHAR(16)   | Unique, required  |
-| `original_url` | VARCHAR(2500) | Required          |
-| `created_time` | TIMESTAMP     | Default: now      |
+## Project layout
+- App: `url-shortener/` contains the Spring Boot service and static landing page.
+- API: `url-shortener/src/main/java/com/SWE/url_shortener/controller/URLcontroller.java` handles `/api/shorten`, `/r/{key}`, `/api/info/{key}`, `/api/list`, `/api/{key}`.
+- Service: `url-shortener/src/main/java/com/SWE/url_shortener/service/Urlservice.java` validates URLs, generates/claims keys, increments click counts.
+- Frontend: static landing page under `url-shortener/src/main/resources/static/` (`index.html`, `global.css`).
+- Tests: `url-shortener/src/test/java/com/SWE/url_shortener/**` covers controller, service, repository, performance; config in `url-shortener/src/test/resources/application.properties`.
 
----
+## API snapshot
+- `POST /api/shorten` — body `{ "url": "...", "customKey": "optional" }` → `{ "key": "abc123", "shortUrl": "http://localhost:8080/r/abc123" }`.
+- `GET /r/{key}` — 302 redirect to original URL; 404 if unknown.
+- `GET /api/info/{key}` — metadata including click count and created time.
+- `GET /api/list` — recent links (optionally filtered in code by owner).
+- `DELETE /api/{key}` — remove a short link.
 
-## Endpoints
+## Configuration
+- Environment variables (see `url-shortener/.env`): `SUPABASE_JDBC_URL`, `SUPABASE_DB_USERNAME`, `SUPABASE_DB_PASSWORD`.
+- App runs on `localhost:8080` by default. Point JDBC URL to your Postgres/Supabase; ensure the `short_urls` table exists before running.
 
-### `POST /shorten`
-- **Description**: Create a short link for a given URL.  
-- **Request body**:
-  ```json
-  { "url": "https://example.com/some/long/path" }
-  ```
-  - **response**:
-  - Short URL: http://localhost:8080/ab12cd3
+## Quick start (local)
+1) Prereqs: Java 17+, Maven, and access to Postgres/Supabase.
+2) Setup: create or edit `url-shortener/.env` with your `SUPABASE_*` values; create the `short_urls` table per schema above.
+3) Run:
+   - `cd url-shortener`
+   - `./mvnw clean package`
+   - `./mvnw spring-boot:run`
+   - (Docker alternative) `docker compose up --build`
 
-### `GET /{code}`
-Description: Redirect to the original URL.
-
-**Response**:
-- 302 Found → Redirects to original_url
-- 404 Not Found if code doesn’t exist
-
-
-### `/testing`:
-- just for testing to verfiy the program compiles (remove later for presentation!)
-
-command on MAC:
-cd into folder
-
-chmod +x mvnw
-./mvnw test
-
-./mvnw clean compile
-./mvnw spring-boot:run
+5) Tests: `./mvnw test`

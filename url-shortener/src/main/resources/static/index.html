@@ -8,16 +8,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
         <script>
-            /**
-             * Handles submitting our parameter and displaying the values
-             */
             async function submitQuery() {
                 const urlInput = document.getElementById('url');
                 const responseContainer = document.getElementById('responses');
                 
                 let urlValue = urlInput.value ?? '';
                 urlValue = urlValue.trim();
-                // Do not allow empty values
+                // Dont not allow empty values
                 if (!urlValue) {
                     console.error("Invalid url!");
                     urlInput.value = '';
@@ -25,10 +22,7 @@
                     alert("Enter a url to shorten!")
                     return;
                 }
-
                 try {
-                
-
                     const response = await fetch("http://localhost:8080/api/url/shorten", {
                         method: 'POST',
                         headers: {
@@ -45,7 +39,7 @@
                     const result = await response.text(); 
                     const shortUrl = result.replace(/^Short URL:\s*/, '').trim();
                     
-                    // Extract just the short code from the full URL
+                    // get just the short code from the full URL
                     const shortCode = shortUrl.split('/').pop();
                     const redirectUrl = `http://localhost:8080/api/url/${shortCode}`;
 
