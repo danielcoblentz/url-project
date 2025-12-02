@@ -20,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 class URLcontrollerAdvancedTest {
 
+    private static final String API_BASE = "/api/url";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -34,7 +36,7 @@ class URLcontrollerAdvancedTest {
     @Test
     void testShortenUrl_EmptyBody() throws Exception {
         // empty request should fail
-        mockMvc.perform(post("/shorten")
+        mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -44,7 +46,7 @@ class URLcontrollerAdvancedTest {
     @Test
     void testShortenUrl_ValidUrl() throws Exception {
         // valid URL should return shortened link
-        mockMvc.perform(post("/shorten")
+        mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"url\": \"https://example.com\"}"))
                 .andExpect(status().isOk())

@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 class URLcontrollerIntegrationTest {
 
+    private static final String API_BASE = "/api/url";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -31,10 +33,10 @@ class URLcontrollerIntegrationTest {
     void testShortenUrlInsertsIntoDatabase() throws Exception {
         // shorten a URL
         String originalUrl = "https://example.com";
-        urlrecord request = new urlrecord(originalUrl);
+        UrlRequest request = new UrlRequest(originalUrl);
 
         // call the endpoint
-        String response = mockMvc.perform(post("/shorten")
+        String response = mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -59,10 +61,10 @@ class URLcontrollerIntegrationTest {
         // URL without http prefix
         String inputUrl = "google.com";
         String expectedNormalizedUrl = "http://google.com";
-        urlrecord request = new urlrecord(inputUrl);
+        UrlRequest request = new UrlRequest(inputUrl);
 
         // call endpoint
-        mockMvc.perform(post("/shorten")
+        mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
@@ -76,16 +78,16 @@ class URLcontrollerIntegrationTest {
     void testShortenSameUrlTwiceReturnsExistingShortCode() throws Exception {
         // same URL twice
         String originalUrl = "https://stackoverflow.com";
-        urlrecord request = new urlrecord(originalUrl);
+        UrlRequest request = new UrlRequest(originalUrl);
 
         // call endpoint twice
-        String response1 = mockMvc.perform(post("/shorten")
+        String response1 = mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String response2 = mockMvc.perform(post("/shorten")
+        String response2 = mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -104,9 +106,9 @@ class URLcontrollerIntegrationTest {
     void testRedirectToOriginalUrl() throws Exception {
         // shorten a URL first
         String originalUrl = "https://github.com";
-        urlrecord request = new urlrecord(originalUrl);
+        UrlRequest request = new UrlRequest(originalUrl);
 
-        String response = mockMvc.perform(post("/shorten")
+        String response = mockMvc.perform(post(API_BASE + "/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -116,7 +118,7 @@ class URLcontrollerIntegrationTest {
         String shortCode = response.substring("Short URL: http://localhost:8080/".length());
 
         // test redirect
-        mockMvc.perform(get("/" + shortCode))
+        mockMvc.perform(get(API_BASE + "/" + shortCode))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", originalUrl));
     }
@@ -124,7 +126,7 @@ class URLcontrollerIntegrationTest {
     @Test
     void testRedirectWithInvalidShortCode() throws Exception {
         // invalid short code should return 404
-        mockMvc.perform(get("/invalidcode123"))
+        mockMvc.perform(get(API_BASE + "/invalidcode123"))
                 .andExpect(status().isNotFound());
     }
 }

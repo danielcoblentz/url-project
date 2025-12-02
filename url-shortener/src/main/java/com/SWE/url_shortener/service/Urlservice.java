@@ -2,6 +2,7 @@ package com.SWE.url_shortener.service;
 
 import com.SWE.url_shortener.model.url;
 import com.SWE.url_shortener.repository.UrlRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -12,6 +13,7 @@ public class Urlservice {
     private final SecureRandom secureRandom = new SecureRandom();
     private final char[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
     private static final int CODE_LENGTH = 7;
+    private static final int MAX_ATTEMPTS = 20;
 
     public Urlservice(UrlRepository urlRepository) {
         this.urlRepository = urlRepository;
@@ -29,8 +31,6 @@ public class Urlservice {
         return urlRepository.findByOriginalUrl(normalized)
                 .map(url::getShortCode)
                 .orElseGet(() -> {
-                        // Increase max attempts and improve error handling
-                    final int MAX_ATTEMPTS = 20; 
                     for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
                         String shortCode = generateShortCode();
                         if (!urlRepository.existsByShortCode(shortCode)) {
@@ -39,7 +39,11 @@ public class Urlservice {
                             url.setShortCode(shortCode);
                             try {
                                 url savedUrl = urlRepository.save(url);
+                                urlRepository.flush();
                                 return savedUrl.getShortCode();
+                            } catch (DataIntegrityViolationException ex) {
+                                // retry on collision
+                                continue;
                             } catch (Exception ex) {
                                 System.err.println("Attempt " + (attempt + 1) + " failed: " + ex.getMessage());
                             }
