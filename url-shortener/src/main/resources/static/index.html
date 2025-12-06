@@ -23,7 +23,7 @@
                     return;
                 }
                 try {
-                    const response = await fetch("http://localhost:8080/api/url/shorten", {
+                    const response = await fetch(`${window.location.origin}/api/url/shorten`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -41,7 +41,7 @@
                     
                     // get just the short code from the full URL
                     const shortCode = shortUrl.split('/').pop();
-                    const redirectUrl = `http://localhost:8080/api/url/${shortCode}`;
+                    const redirectUrl = `${window.location.origin}/api/url/${shortCode}`;
 
                     // create the response item container
                     const responseItem = document.createElement('div');
